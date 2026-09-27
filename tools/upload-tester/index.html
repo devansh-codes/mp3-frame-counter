@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Frame Counter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=Figtree:wght@400;500;600&display=swap"
+    />
+    <style>
+      /* A single, deliberate light theme: warm cream, deep green, lavender. */
+      :root {
+        color-scheme: light;
+        --cream: #fdfcef;
+        --cream-2: #f3f1e1;
+        --card: #fffffa;
+        --ink: #141413;
+        --muted: #5f5e55;
+        --line: #e4e1cd;
+        --green: #1f4a43;
+        --green-soft: #dfeae4;
+        --lavender: #ecdcfb;
+        --lavender-hover: #e2cdf8;
+        --amber-bg: #faf0d4;
+        --amber-fg: #6b4a00;
+        --rose-bg: #f8e1df;
+        --rose-fg: #8a2a22;
+        --serif: 'EB Garamond', Garamond, 'Times New Roman', serif;
+        --sans: Figtree, -apple-system, 'Segoe UI', system-ui, sans-serif;
+        --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--cream);
+        color: var(--ink);
+        font: 17px/1.55 var(--sans);
+      }
+      :focus-visible {
+        outline: 2px solid var(--green);
+        outline-offset: 3px;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.85em;
+      }
+
+      /* Top banner */
+      .banner {
+        background: var(--green);
+        color: #f4f7f2;
+        text-align: center;
+        font-size: 0.92rem;
+        font-weight: 500;
+        padding: 10px 16px;
+      }
+      .banner code {
+        background: rgb(255 255 255 / 0.12);
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+
+      /* Header bar */
+      .shell {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      .nav {
+        margin-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px 12px 20px;
+        background: var(--card);
+        border: 1.5px solid var(--line);
+        border-radius: 14px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+      }
+      .brand svg {
+        display: block;
+      }
+      .nav-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .chip {
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: var(--cream-2);
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      /* Hero */
+      .hero {
+        text-align: center;
+        padding: 64px 0 36px;
+        display: grid;
+        justify-items: center;
+        gap: 18px;
+      }
+      .eyebrow {
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h1 {
+        margin: 0;
+        font-family: var(--serif);
+        font-weight: 500;
+        font-size: clamp(2.6rem, 7vw, 4.6rem);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+      }
+      h1 em {
+        display: block;
+        font-style: italic;
+      }
+      .sub {
+        margin: 0;
+        max-width: 34rem;
+        font-size: 1.12rem;
+        color: #2c2c28;
+      }
+
+      /* Upload */
+      .dropzone {
+        margin: 8px auto 0;
+        max-width: 40rem;
+        display: grid;
+        justify-items: center;
+        gap: 12px;
+        padding: 34px 20px;
+        border: 1.5px dashed #cfcbb2;
+        border-radius: 16px;
+        background: var(--card);
+      }
+      .upload-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 26px;
+        border: 2px solid var(--ink);
+        border-radius: 12px;
+        background: var(--lavender);
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: background-color 0.15s;
+      }
+      .upload-button:hover {
+        background: var(--lavender-hover);
+      }
+      #picker:focus-visible + .upload-button {
+        outline: 2px solid var(--green);
+        outline-offset: 3px;
+      }
+      .hint {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .drop-overlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgb(253 252 239 / 0.86);
+        border: 3px dashed var(--green);
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 2.4rem;
+        color: var(--green);
+        pointer-events: none;
+      }
+      .drop-overlay[hidden] {
+        display: none;
+      }
+
+      /* Results */
+      .results {
+        max-width: 40rem;
+        margin: 28px auto 64px;
+        display: grid;
+        gap: 16px;
+      }
+      #status {
+        margin: 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+        min-height: 1.5em;
+      }
+      .card {
+        display: grid;
+        gap: 18px;
+        padding: 24px 26px;
+        background: var(--card);
+        border: 1.5px solid var(--line);
+        border-radius: 16px;
+      }
+      .card-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .file-name {
+        font-weight: 600;
+        word-break: break-all;
+      }
+      .pill {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: var(--cream-2);
+        color: var(--muted);
+      }
+      .pill.ok {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .pill.bad {
+        background: var(--amber-bg);
+        color: var(--amber-fg);
+      }
+      .outcome.waiting {
+        color: var(--muted);
+        font-style: italic;
+        font-family: var(--serif);
+        font-size: 1.4rem;
+      }
+      .outcome.frames {
+        display: grid;
+        gap: 2px;
+      }
+      .frames .count {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 3.6rem;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--green);
+        font-variant-numeric: tabular-nums lining-nums;
+      }
+      .frames .unit {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .outcome.error {
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: var(--amber-bg);
+        color: var(--amber-fg);
+      }
+      .outcome.error.fatal {
+        background: var(--rose-bg);
+        color: var(--rose-fg);
+      }
+      .outcome.error.info {
+        background: var(--cream-2);
+        color: var(--ink);
+      }
+      .outcome.error code {
+        font-weight: 700;
+      }
+      .outcome .note {
+        margin-top: 6px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 8px 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+        font-size: 0.95rem;
+      }
+      dt {
+        color: var(--muted);
+      }
+      dd {
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+        word-break: break-word;
+      }
+      details summary {
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      details pre {
+        margin: 10px 0 0;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: var(--cream-2);
+        font-family: var(--mono);
+        font-size: 0.84rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 0 16px 40px;
+      }
+      @media (max-width: 520px) {
+        .card {
+          padding: 20px;
+        }
+        dl {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        dd {
+          margin-bottom: 8px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .upload-button {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      Local tester for the MP3 Frame Counter API · uploads go to <code>POST /file-upload</code>
+    </div>
+
+    <div class="shell">
+      <header class="nav">
+        <div class="brand">
+          <svg width="26" height="22" viewBox="0 0 26 22" aria-hidden="true">
+            <rect x="0" y="6" width="4" height="10" rx="1.5" fill="#141413" />
+            <rect x="7" y="2" width="4" height="18" rx="1.5" fill="#141413" />
+            <rect x="14" y="8" width="4" height="6" rx="1.5" fill="#141413" />
+            <rect x="21" y="4" width="4" height="14" rx="1.5" fill="#1f4a43" />
+          </svg>
+          Frame Counter
+        </div>
+        <div class="nav-meta">
+          <span>MPEG-1 Layer III</span>
+          <span class="chip">localhost</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <span class="eyebrow">MP3 frame analysis</span>
+          <h1>Drop an MP3, <em>count every frame.</em></h1>
+          <p class="sub">
+            Upload a file to count its audio frames. It is streamed and counted as it arrives, and
+            nothing is stored.
+          </p>
+        </section>
+
+        <div class="dropzone">
+          <input
+            id="picker"
+            class="visually-hidden"
+            type="file"
+            accept=".mp3,.mp2,.mpga,audio/mpeg,audio/mp3,audio/*"
+            multiple
+          />
+          <label for="picker" class="upload-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 16V4m0 0-5 5m5-5 5 5M5 20h14"
+                fill="none"
+                stroke="#141413"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Upload an MP3
+          </label>
+          <p class="hint">or drag files here from Finder</p>
+        </div>
+
+        <div class="results">
+          <p id="status" aria-live="polite"></p>
+          <section id="results" aria-label="Results"></section>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      Only MPEG-1 Layer III (standard .mp3) is counted. Other MPEG formats, such as .mp2, are
+      reported as unsupported.
+    </footer>
+
+    <div class="drop-overlay" id="drop-overlay" hidden>Drop to count frames</div>
+
+    <template id="card-template">
+      <article class="card">
+        <div class="card-head">
+          <span class="file-name"></span>
+          <span class="pill">Uploading…</span>
+        </div>
+        <div class="outcome waiting">Counting frames…</div>
+        <dl>
+          <dt>Size</dt>
+          <dd class="size"></dd>
+          <dt>Type</dt>
+          <dd class="type"></dd>
+          <dt>Last modified</dt>
+          <dd class="modified"></dd>
+          <dt>Processing time</dt>
+          <dd class="time">–</dd>
+        </dl>
+        <details hidden>
+          <summary>Raw response</summary>
+          <pre></pre>
+        </details>
+      </article>
+    </template>
+
+    <script>
+      const picker = document.getElementById('picker');
+      const overlay = document.getElementById('drop-overlay');
+      const statusLine = document.getElementById('status');
+      const results = document.getElementById('results');
+      const cardTemplate = document.getElementById('card-template');
+
+      picker.addEventListener('change', () => {
+        uploadFiles([...picker.files]);
+        picker.value = ''; // so picking the same file again still triggers 'change'
+      });
+
+      // Drag and drop from Finder. The browser only allows a drop if both dragenter and dragover
+      // are cancelled; otherwise it opens the file itself. dragDepth tracks enter/leave pairs
+      // across child elements, so the overlay doesn't flicker.
+      let dragDepth = 0;
+      const isFileDrag = (event) => event.dataTransfer?.types.includes('Files');
+
+      window.addEventListener('dragenter', (event) => {
+        if (!isFileDrag(event)) return;
+        event.preventDefault();
+        dragDepth += 1;
+        overlay.hidden = false;
+      });
+      window.addEventListener('dragover', (event) => {
+        if (!isFileDrag(event)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+      });
+      window.addEventListener('dragleave', (event) => {
+        if (!isFileDrag(event)) return;
+        dragDepth = Math.max(0, dragDepth - 1);
+        if (dragDepth === 0) overlay.hidden = true;
+      });
+      window.addEventListener('drop', (event) => {
+        if (!isFileDrag(event)) return;
+        event.preventDefault();
+        dragDepth = 0;
+        overlay.hidden = true;
+        uploadFiles([...event.dataTransfer.files]);
+      });
+
+      /** Shows results only for the files just chosen or dropped, replacing earlier ones. */
+      async function uploadFiles(files) {
+        if (files.length === 0) return;
+        results.replaceChildren();
+        const cards = files.map((file) => {
+          const card = createCard(file);
+          results.append(card);
+          return card;
+        });
+        // One at a time, so each processing time measures a single request.
+        for (const [index, file] of files.entries()) {
+          statusLine.textContent =
+            files.length > 1 ? `Uploading ${index + 1} of ${files.length}…` : 'Uploading…';
+          await upload(file, cards[index]);
+        }
+        statusLine.textContent = '';
+      }
+
+      function createCard(file) {
+        const card = cardTemplate.content.firstElementChild.cloneNode(true);
+        card.querySelector('.file-name').textContent = file.name;
+        card.querySelector('.size').textContent =
+          `${formatSize(file.size)} (${file.size.toLocaleString()} bytes)`;
+        card.querySelector('.type').textContent = file.type || 'unknown (checked by content)';
+        card.querySelector('.modified').textContent = new Date(file.lastModified).toLocaleString();
+        return card;
+      }
+
+      async function upload(file, card) {
+        const form = new FormData();
+        form.append('file', file);
+        const started = performance.now();
+
+        let response;
+        let text;
+        try {
+          response = await fetch('/file-upload', { method: 'POST', body: form });
+          text = await response.text();
+        } catch (error) {
+          setPill(card, 'Failed', 'bad');
+          showError(
+            card,
+            'NETWORK_ERROR',
+            `${error.message}. Is "npm run tester" running?`,
+            'fatal',
+          );
+          return;
+        }
+
+        card.querySelector('.time').textContent =
+          `${Math.round(performance.now() - started).toLocaleString()} ms`;
+        let body = null;
+        try {
+          body = JSON.parse(text);
+        } catch {
+          // Not JSON: the raw text is still shown below.
+        }
+
+        setPill(card, `HTTP ${response.status}`, response.ok ? 'ok' : 'bad');
+        if (typeof body?.frameCount === 'number') {
+          showFrames(card, body.frameCount);
+        } else if (body?.error) {
+          const expected = body.error.code === 'UNSUPPORTED_MP3_FORMAT';
+          showError(card, body.error.code, body.error.message, expected ? 'info' : '');
+        } else {
+          showError(card, 'NOT_JSON', 'The response was not the expected JSON.', 'fatal');
+        }
+
+        const details = card.querySelector('details');
+        details.querySelector('pre').textContent =
+          body === null ? text : JSON.stringify(body, null, 2);
+        details.hidden = false;
+      }
+
+      function showFrames(card, frameCount) {
+        const outcome = card.querySelector('.outcome');
+        outcome.className = 'outcome frames';
+        const count = document.createElement('span');
+        count.className = 'count';
+        count.textContent = frameCount.toLocaleString();
+        const unit = document.createElement('span');
+        unit.className = 'unit';
+        unit.textContent = frameCount === 1 ? 'audio frame' : 'audio frames';
+        outcome.replaceChildren(count, unit);
+      }
+
+      /** kind: '' (client error), 'info' (expected: out-of-scope format) or 'fatal'. */
+      function showError(card, code, message, kind) {
+        const outcome = card.querySelector('.outcome');
+        outcome.className = `outcome error ${kind}`;
+        const codeElement = document.createElement('code');
+        codeElement.textContent = code;
+        outcome.replaceChildren(codeElement, document.createElement('br'), message);
+        if (kind === 'info') {
+          const note = document.createElement('div');
+          note.className = 'note';
+          note.textContent =
+            'This is expected: only MPEG-1 Layer III (standard .mp3) is in scope, so .mp2 and other MPEG formats are rejected.';
+          outcome.append(note);
+        }
+      }
+
+      function setPill(card, label, kind) {
+        const pill = card.querySelector('.pill');
+        pill.textContent = label;
+        pill.className = `pill ${kind}`;
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+    </script>
+  </body>
+</html>
