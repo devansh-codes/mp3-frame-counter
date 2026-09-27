@@ -1,0 +1,23 @@
+# docker compose up --build   →   tester UI at http://localhost:5173, API at http://localhost:3000
+services:
+  api:
+    build:
+      context: .
+      target: api
+    ports:
+      - '3000:3000'
+    environment:
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-2048}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    restart: unless-stopped
+
+  tester:
+    build:
+      context: .
+      target: tester
+    ports:
+      - '5173:5173'
+    environment:
+      API_URL: http://api:3000
+    depends_on:
+      - api
