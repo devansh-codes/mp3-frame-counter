@@ -226,3 +226,12 @@ cross-checks. Each entry says what was tested, how, the result and what it chang
   - the API runs as `node` (non-root)
   - images: API 179 MB, tester 315 MB
 - `npm run check` green: 192 tests, 100% coverage.
+
+## V-014: Submission readiness (2026-09-28)
+- **Owner's sample:** `shasum ~/Downloads/test-file.mp3` gives
+  `91adcdcbe919177611009096ff961454c9914cdb`, identical to `test/fixtures/sample.mp3`. The expected
+  answer (6089) therefore applies to the file the assessment provided.
+- **Fresh clone:** `git clone` → `npm ci` → `npm audit` (0 vulnerabilities) → `npm run check`
+  (192/192 tests, 100% coverage) → build OK.
+- **CI:** green on Node 22 and 24 for every pushed commit.
+- **Requirements register:** all 46 items marked verified, each with its evidence.

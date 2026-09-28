@@ -51,3 +51,14 @@ its fix. Newest entries go at the bottom.
 | audit | npm audit | ✅ | 0 vulnerabilities |
 | no MP3 packages | npm ls --all \| tail -n +2 \| grep -Ei 'mp3\|id3\|audio…' | ✅ | no matches |
 | runtime deps | npm ls --omit=dev --depth=0 | ✅ | fastify 5.12.5, @fastify/multipart 10.1.2 only |
+
+### 2026-09-28: submission gate
+| Gate | Command | Result | Notes |
+|---|---|---|---|
+| format | npm run format:check | ✅ | |
+| lint | npm run lint | ✅ | |
+| typecheck | npm run typecheck | ✅ | |
+| test | npm run test:coverage | ✅ | 192/192, coverage 100% |
+| build | npm run build | ✅ | |
+| audit | npm audit | ✅ | 0 vulnerabilities |
+| CI | GitHub Actions (Node 22, 24) | ✅ | |

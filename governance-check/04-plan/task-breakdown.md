@@ -16,7 +16,7 @@ Status legend: ☐ todo · ◐ in progress · ☑ done
 | 0.2 | Break the brief into small, traceable requirements | all | `requirements-register.md` covers every sentence | ☑ |
 | 0.3 | Write the non-negotiables | all | `non-negotiables.md` | ☑ |
 | 0.4 | Initialise the git repo (`main`) | SUB-01 | `git init` done | ☑ |
-| 0.5 | Obtain the **provided sample MP3** | OBJ-02 | File placed in the repo and its mediainfo values recorded | ☑ public copy (SHA-1 91adcdcb…) in `test/fixtures/sample.mp3`; owner's copy still to be SHA-checked |
+| 0.5 | Obtain the **provided sample MP3** | OBJ-02 | File placed in the repo and its mediainfo values recorded | ☑ in `test/fixtures/sample.mp3`; the owner's copy has the identical SHA-1 (V-014) |
 
 ## Phase 1: Architecture & counting logic (validated)
 
@@ -28,7 +28,7 @@ Status legend: ☐ todo · ◐ in progress · ☑ done
 | 1.4 | Prototype the streaming parser: chunk fuzzing and memory/throughput | EV-S1/S2 | Same | ☑ |
 | 1.5 | Evaluate the HTTP stack: streaming proof, error behaviour, versions | EV-S1, EV-E* | Same | ☑ |
 | 1.6 | Write the ADR, tech stack, alternatives considered and algorithm spec | EV-A2 | `02-architecture/`, `03-domain-logic/` | ☑ |
-| 1.7 | Adversarial review of the chosen design | all | Review recorded and objections resolved | ◐ (V-010 running) |
+| 1.7 | Adversarial review of the chosen design | all | Review recorded and objections resolved | ☑ (V-010a audit, V-010b adversarial campaign) |
 | **Gate** | Human owner approves the architecture and logic | — | — | ☑ owner instructed to proceed with implementation and validation |
 
 ## Phase 2: Scaffold & tooling ☑
@@ -72,7 +72,7 @@ Status legend: ☐ todo · ◐ in progress · ☑ done
 | 5.4 | Central error handler: domain and HTTP errors mapped to JSON `{error:{code,message}}` with correct status | EV-E*, DER-01 | Tests for 400/405/413/415/422/404 |
 | 5.5 | Abort and oversize handling, no leaks | DER-06 | Tests |
 
-## Phase 6: Verification ☑ (6.4 fresh-clone gate runs at commit time)
+## Phase 6: Verification ☑
 
 | # | Task | Satisfies | Done when |
 |---|---|---|---|
@@ -82,7 +82,7 @@ Status legend: ☐ todo · ◐ in progress · ☑ done
 | 6.4 | Fresh-clone gate: `npm ci`, all gates, start, curl | TIP-02 | Logged |
 | 6.5 | Dependency audit: no MP3 parsing packages | REQ-03 | Logged |
 
-## Phase 7: Documentation & submission ◐ (README ☑; final register pass and commits pending)
+## Phase 7: Documentation & submission ☑
 
 | # | Task | Satisfies | Done when |
 |---|---|---|---|

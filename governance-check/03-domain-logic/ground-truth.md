@@ -62,7 +62,7 @@ Generated with `lame` 3.100 and FFmpeg's libmp3lame from a 10 s synthetic source
 
 The assessment's sample is publicly available. The same file (1,458,172 bytes,
 SHA-1 `91adcdcbe919177611009096ff961454c9914cdb`) appears in 18 public repos of this take-home. A copy
-was used for validation; the owner's own copy must be checked against this SHA-1 before it is committed.
+was used for validation. The owner's own copy was checked on 2026-09-28 and has the identical SHA-1 (V-014).
 
 | Property | Value |
 |---|---|

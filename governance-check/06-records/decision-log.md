@@ -227,3 +227,15 @@ status. Later entries may supersede earlier ones; they never delete them.
 - **Why not Docker only:** tests, lint and live reload are the everyday developer loop and are
   faster natively. Docker is for "just run it".
 - **Status:** Accepted.
+
+### D-018: One-time history rewrite before submission (exception to NN-13)
+- **Date:** 2026-09-28
+- **Context:** The owner asked for the AI co-author trailer to be removed from every commit message.
+  Messages can only be changed by rewriting history.
+- **Decision:** Rewrite `main` once, removing only that trailer line from each message. Authors,
+  dates, order and file contents are unchanged, and the final tree is identical (verified by tree
+  hash). A local backup ref was kept, and the push used `--force-with-lease`. Future commits carry
+  no trailer.
+- **Why this is allowed:** NN-13 forbids rewriting shared history. The repo had no other
+  contributors and nothing depends on the old commit IDs. The owner explicitly requested it.
+- **Status:** Done.
