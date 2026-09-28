@@ -93,20 +93,27 @@ describe('Mp3FrameCounter', () => {
   describe('chunk boundaries', () => {
     const FIXED_CHUNK_SIZES = [1, 2, 3, 5, 13, 1441, 4096, 65_536];
     const RANDOM_SPLITS_PER_FILE = 25;
+    // Splitting the 1.4 MB sample into 1-byte chunks takes ~2 s warm and can pass the default 5 s
+    // timeout on a cold or slow machine (seen on a fresh clone), so this group gets more room.
+    const CHUNKING_TIMEOUT_MS = 30_000;
 
-    it.each(FIXTURES)('gives the same result however $file is split', ({ file }) => {
-      const data = readFixture(file);
-      const expected = countFramesIn(data);
+    it.each(FIXTURES)(
+      'gives the same result however $file is split',
+      ({ file }) => {
+        const data = readFixture(file);
+        const expected = countFramesIn(data);
 
-      for (const size of FIXED_CHUNK_SIZES) {
-        expect(countFrames(splitIntoChunks(data, () => size))).toEqual(expected);
-      }
-      for (let seed = 1; seed <= RANDOM_SPLITS_PER_FILE; seed++) {
-        const maxChunkSize = [4, 64, 2048, 100_000][seed % 4] ?? 64;
-        const chunks = splitIntoChunks(data, randomChunkSizes(seed, maxChunkSize));
-        expect(countFrames(chunks)).toEqual(expected);
-      }
-    });
+        for (const size of FIXED_CHUNK_SIZES) {
+          expect(countFrames(splitIntoChunks(data, () => size))).toEqual(expected);
+        }
+        for (let seed = 1; seed <= RANDOM_SPLITS_PER_FILE; seed++) {
+          const maxChunkSize = [4, 64, 2048, 100_000][seed % 4] ?? 64;
+          const chunks = splitIntoChunks(data, randomChunkSizes(seed, maxChunkSize));
+          expect(countFrames(chunks)).toEqual(expected);
+        }
+      },
+      CHUNKING_TIMEOUT_MS,
+    );
 
     it('does not keep references to chunks after push() returns', () => {
       const data = readFixture('vbr-xing.mp3');
