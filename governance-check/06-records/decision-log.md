@@ -238,4 +238,4 @@ status. Later entries may supersede earlier ones; they never delete them.
   no trailer.
 - **Why this is allowed:** NN-13 forbids rewriting shared history. The repo had no other
   contributors and nothing depends on the old commit IDs. The owner explicitly requested it.
-- **Status:** Done.
+- **Status:** Pending. The rewrite is a destructive git operation, so the owner runs it themselves.
